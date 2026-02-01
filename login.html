@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundora - Login</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url("https://wallpaperaccess.com/full/147507.png");
+
+        }
+
+        .card {
+            background: #252525;
+            padding: 30px;
+            border-radius: 10px;
+            width: 320px;
+            text-align: center;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 95%;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        a {
+            color: #aaa;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Login to Soundora</h2>
+
+        <input type="email" placeholder="Email">
+        <input type="password" placeholder="Password">
+
+        <button class="login-btn" onclick="loginUser()">Login</button>
+
+        <script>
+            function loginUser() {
+                const email = document.querySelector("input[type='email']").value;
+
+                if (email === "") {
+                    alert("Please enter email");
+                    return;
+                }
+
+                localStorage.setItem("username", email);
+                window.location.href = "index.html";
+            }
+        </script>
+
+        <p>New here? <a href="signup.html">Create Account</a></p>
+    </div>
+
+</body>
+
+</html>
