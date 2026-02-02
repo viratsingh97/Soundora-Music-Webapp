@@ -4,25 +4,25 @@ let songs;
 let currFolder;
 async function getSongs(folder) {
     currFolder = folder;
-    let a = await fetch(`http://127.0.0.1:3000/${folder}/`)
-    let response = await a.text();
-    console.log(response)
-    let div = document.createElement("div")
-    div.innerHTML = response;
-    let as = div.getElementsByTagName("a")
-    let songs = []
-    for (let index = 0; index < as.length; index++) {
-        const element = as[index];
-        if (element.href.endsWith(".mp3")) {
-            songs.push(decodeURIComponent(element.href).split("\\").pop().replace(/\.mp3+$/i, ""))
+    try {
+        // Correct fetch path
+        const response = await fetch(`songs/${folder}/songs.json`);
+        const data = await response.json();
 
-        }
+        const songsList = data.songs.map(filePath => {
+            const parts = filePath.split("/");
+            const fileName = parts[parts.length - 1];
+            return decodeURIComponent(fileName.replace(/\.mp3$/, ""));
+        });
 
+        return songsList;
+    } catch (err) {
+        console.error("Failed to load songs for folder:", folder, err);
+        return [];
     }
-    return songs;
-
-
 }
+
+
 
 function formatTime(seconds) {
     if (isNaN(seconds)) return "00:00";
@@ -42,20 +42,19 @@ currentSong.addEventListener("timeupdate", () => {
 });
 
 const playMusic = (track) => {
-    currentSong.src = `/${currFolder}/${track}.mp3`;
+    // track is the display name
+    currentSong.src = `songs/${currFolder}/${encodeURIComponent(track)}.mp3`;
     currentSong.play();
-
     play.src = "img/pause.svg";
 
-    // show song name
-    document.querySelector(".songinfo").innerHTML = track;
+    document.querySelector(".songinfo").innerText = track;
 
-    // wait for duration to load
     currentSong.addEventListener("loadedmetadata", () => {
-        document.querySelector(".songtime").innerHTML =
+        document.querySelector(".songtime").innerText =
             `00:00 / ${formatTime(currentSong.duration)}`;
     });
 };
+
 let seekbar = document.querySelector(".seekbar");
 
 seekbar.addEventListener("click", (e) => {
@@ -72,7 +71,8 @@ seekbar.addEventListener("click", (e) => {
     currentSong.currentTime = percent * currentSong.duration;
 });
 async function loadPlaylist(folder) {
-    songs = await getSongs(`songs/${folder}`);
+    // Pass just the folder name
+    songs = await getSongs(folder);  
 
     let songUL = document.querySelector(".songlist ul");
     songUL.innerHTML = "";
@@ -99,6 +99,7 @@ async function loadPlaylist(folder) {
         });
     });
 }
+
 
 async function main() {
 
