@@ -8,7 +8,6 @@ async function getSongs(folder) {
         const response = await fetch(`songs/${folder}/songs.json`);
         const data = await response.json();
 
-        // Return full paths
         return data.songs;
     } catch (err) {
         console.error("Failed to load songs for folder:", folder, err);
@@ -29,7 +28,6 @@ currentSong.addEventListener("timeupdate", () => {
     document.querySelector(".songtime").innerHTML =
         `${formatTime(currentSong.currentTime)} / ${formatTime(currentSong.duration)}`;
 
-    // move seekbar
     if (!isNaN(currentSong.duration)) {
         let percent = (currentSong.currentTime / currentSong.duration) * 100;
         document.querySelector(".circle").style.left = percent + "%";
@@ -37,11 +35,10 @@ currentSong.addEventListener("timeupdate", () => {
 });
 
 const playMusic = (trackPath) => {
-    currentSong.src = trackPath; // use the full path from JSON
+    currentSong.src = trackPath; 
     currentSong.play();
     play.src = "img/pause.svg";
 
-    // Display name
     const songName = decodeURIComponent(trackPath.split("/").pop().replace(".mp3", ""));
     document.querySelector(".songinfo").innerText = songName;
 
@@ -50,6 +47,7 @@ const playMusic = (trackPath) => {
             `00:00 / ${formatTime(currentSong.duration)}`;
     });
 };
+
 
 
 let seekbar = document.querySelector(".seekbar");
@@ -68,18 +66,21 @@ seekbar.addEventListener("click", (e) => {
     currentSong.currentTime = percent * currentSong.duration;
 });
 async function loadPlaylist(folder) {
-    // Pass just the folder name
-    songs = await getSongs(folder);
+    songs = await getSongs(folder);  
 
     let songUL = document.querySelector(".songlist ul");
     songUL.innerHTML = "";
 
-    for (const song of songs) {
+    for (const songPath of songs) {
+        const displayName = decodeURIComponent(
+            songPath.split("/").pop().replace(".mp3", "")
+        );
+
         songUL.innerHTML += `
         <li>
             <img class="invert" src="./img/music.svg">
             <div class="info">
-                <div>${song}</div>
+                <div>${displayName}</div>
                 <div>By Virat</div>
             </div>
             <div class="playnow">
@@ -91,10 +92,9 @@ async function loadPlaylist(folder) {
 
     Array.from(songUL.getElementsByTagName("li")).forEach((li, index) => {
         li.addEventListener("click", () => {
-            playMusic(songs[index]); // pass the full path
+            playMusic(songs[index]); 
         });
     });
-
 }
 
 
