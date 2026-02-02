@@ -320,7 +320,7 @@ body {
 
 }
 .songlist{
-    /* height: 410px; */
+    height: 410px;
     overflow: auto;
     margin-bottom: 44px 0;;
 }
@@ -516,28 +516,4 @@ body {
 .container {
     width: 100%;
     min-height: 100vh;
-}
-.card {
-    position: relative;
-}
-
-.play-circle {
-    bottom: 20%;
-    right: 10%;
-}
-.left {
-    min-height: 100vh;
-}
-
-.songlist {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-}
-.playbar {
-    width: 100%;
-    box-sizing: border-box;
-}
-* {
-    box-sizing: border-box;
 }
