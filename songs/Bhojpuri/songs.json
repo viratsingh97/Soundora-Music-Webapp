@@ -1,11 +1,11 @@
 {
   "songs": [
-    "Kamar 28-320kbps",
-    "Lucknow Waali-320kbps",
-    "Mehari-320kbps",
-    "Odhaniya Ae Gori-320kbps",
-    "Raja Rangbaaz-128kbps",
-    "Rangbaaz-128kbps",
-    "Samiyana-320kbps"
+    "songs/Bhojpuri/Kamar%2028-320kbps.mp3",
+    "songs/Bhojpuri/Lucknow%20Waali-320kbps.mp3",
+    "songs/Bhojpuri/Mehari-320kbps.mp3",
+    "songs/Bhojpuri/Odhaniya%20Ae%20Gori-320kbps.mp3",
+    "songs/Bhojpuri/Raja%20Rangbaaz-128kbps.mp3",
+    "songs/Bhojpuri/Rangbaaz-128kbps.mp3",
+    "songs/Bhojpuri/Samiyana-320kbps.mp3"
   ]
 }
