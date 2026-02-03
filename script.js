@@ -1,22 +1,22 @@
-console.log(`Lets write js`)
+
+console.log("Lets write js");
+
 let currentSong = new Audio();
-let songs;
-let currFolder;
+let songs = [];
+let currFolder = "";
+let currentIndex = -1;
+
 async function getSongs(folder) {
     currFolder = folder;
     try {
         const response = await fetch(`songs/${folder}/songs.json`);
         const data = await response.json();
-
         return data.songs;
     } catch (err) {
-        console.error("Failed to load songs for folder:", folder, err);
+        console.error("Error loading songs:", err);
         return [];
     }
 }
-
-
-
 
 function formatTime(seconds) {
     if (isNaN(seconds)) return "00:00";
@@ -24,196 +24,179 @@ function formatTime(seconds) {
     let secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
 }
+
 currentSong.addEventListener("timeupdate", () => {
-    document.querySelector(".songtime").innerHTML =
+    document.querySelector(".songtime").innerText =
         `${formatTime(currentSong.currentTime)} / ${formatTime(currentSong.duration)}`;
 
     if (!isNaN(currentSong.duration)) {
-        let percent = (currentSong.currentTime / currentSong.duration) * 100;
+        const percent = (currentSong.currentTime / currentSong.duration) * 100;
         document.querySelector(".circle").style.left = percent + "%";
     }
 });
 
-const playMusic = (trackPath) => {
-    currentSong.src = trackPath; 
+function playMusic(trackPath, index) {
+    currentIndex = index;
+    currentSong.src = trackPath;
     currentSong.play();
     play.src = "img/pause.svg";
 
-    const songName = decodeURIComponent(trackPath.split("/").pop().replace(".mp3", ""));
-    document.querySelector(".songinfo").innerText = songName;
+    const name = decodeURIComponent(
+        trackPath.split("/").pop().replace(".mp3", "")
+    );
+    document.querySelector(".songinfo").innerText = name;
 
-    currentSong.addEventListener("loadedmetadata", () => {
+    currentSong.onloadedmetadata = () => {
         document.querySelector(".songtime").innerText =
             `00:00 / ${formatTime(currentSong.duration)}`;
-    });
-};
+    };
+}
 
-
-
-let seekbar = document.querySelector(".seekbar");
-
-seekbar.addEventListener("click", (e) => {
-
-    let seekbarWidth = seekbar.clientWidth;
-
-
-    let clickPosition = e.offsetX;
-
-
-    let percent = clickPosition / seekbarWidth;
-
-
+document.querySelector(".seekbar").addEventListener("click", (e) => {
+    const percent = e.offsetX / e.target.clientWidth;
     currentSong.currentTime = percent * currentSong.duration;
 });
-async function loadPlaylist(folder) {
-    songs = await getSongs(folder);  
 
-    let songUL = document.querySelector(".songlist ul");
+async function loadPlaylist(folder) {
+    songs = await getSongs(folder);
+    currentIndex = -1;
+
+    const songUL = document.querySelector(".songlist ul");
     songUL.innerHTML = "";
 
-    for (const songPath of songs) {
-        const displayName = decodeURIComponent(
-            songPath.split("/").pop().replace(".mp3", "")
+    songs.forEach((song, index) => {
+        const name = decodeURIComponent(
+            song.split("/").pop().replace(".mp3", "")
         );
 
         songUL.innerHTML += `
-        <li>
-            <img class="invert" src="./img/music.svg">
-            <div class="info">
-                <div>${displayName}</div>
-                <div>By Virat</div>
-            </div>
-            <div class="playnow">
-                <span>Play now</span>
-                <img class="invert" src="./img/play.svg">
-            </div>
-        </li>`;
-    }
+            <li>
+                <img class="invert" src="./img/music.svg">
+                <div class="info">
+                    <div>${name}</div>
+                    <div>By Virat</div>
+                </div>
+                <div class="playnow">
+                    <span>Play now</span>
+                    <img class="invert" src="./img/play.svg">
+                </div>
+            </li>`;
+    });
 
-    Array.from(songUL.getElementsByTagName("li")).forEach((li, index) => {
+    Array.from(songUL.children).forEach((li, index) => {
         li.addEventListener("click", () => {
-            playMusic(songs[index]); 
+            playMusic(songs[index], index);
         });
     });
 }
 
-
 async function main() {
 
-    await loadPlaylist("ncs")
-    let songUL = document.querySelector(".songlist").getElementsByTagName("ul")[0]
-    for (const song of songs) {
-        songUL.innerHTML = songUL.innerHTML + `<li><img class="invert" src="./img/music.svg" alt="">
-                            <div class="info">
-                                <div> ${song}</div>
-                                <div>By Virat</div>
-                            </div>
+    await loadPlaylist("ncs");
 
-                            <div class="playnow">
-                                <span>Play now</span>
-                                <img class="invert" src="./img/play.svg" alt=" ">
-                            </div>
-                        
-        </li>`;
-
-    }
-    Array.from(document.querySelector(".songlist").getElementsByTagName("li")).forEach(e => {
-        e.addEventListener("click", element => {
-            console.log(e.querySelector(".info").firstElementChild.innerHTML)
-            let track = e.querySelector(".info").firstElementChild.innerHTML.trim();
-            playMusic(track);
-
-        })
-
-    })
-    //Attacch eve listner to play next and prev
     play.addEventListener("click", () => {
         if (currentSong.paused) {
-            currentSong.play()
-            play.src = "img/pause.svg"
+            currentSong.play();
+            play.src = "img/pause.svg";
         } else {
-            currentSong.pause()
-            play.src = "img/play.svg"
+            currentSong.pause();
+            play.src = "img/play.svg";
         }
-    })
-    // var audio=new Audio(songs[0]); 
-    // audio.play();
-    // audio.addEventListener("loadeddata",()=>{
-    //     //let duration=audio.duration;
-    //     console.log(audio.duration,audio.currentSrc,audio.currentTime)
-    // });        
-    document.querySelector(".hamburger").addEventListener("click", () => {
-        document.querySelector(".left").style.left = "0"
-    })
+    });
 
-    document.querySelector(".close").addEventListener("click", () => {
-        document.querySelector(".left").style.left = "-120%"
-    })
     previous.addEventListener("click", () => {
-        let curr = decodeURIComponent(currentSong.src)
-            .split("/")
-            .pop()
-            .replace(".mp3", "");
-
-        let index = songs.indexOf(curr);
-        if (index > 0) {
-            playMusic(songs[index - 1]);
+        if (currentIndex > 0) {
+            playMusic(songs[currentIndex - 1], currentIndex - 1);
         }
     });
 
     next.addEventListener("click", () => {
-        let curr = decodeURIComponent(currentSong.src)
-            .split("/")
-            .pop()
-            .replace(".mp3", "");
-
-        let index = songs.indexOf(curr);
-        if (index < songs.length - 1) {
-            playMusic(songs[index + 1]);
+        if (currentIndex < songs.length - 1) {
+            playMusic(songs[currentIndex + 1], currentIndex + 1);
         }
     });
-    document.querySelector(".range").getElementsByTagName("input")[0].addEventListener("change", (e) => {
-        console.log(e, e.target, e.target.value)
-        currentSong.volume = parseInt(e.target.value) / 100
-    })
 
-    Array.from(document.getElementsByClassName("card")).forEach(card => {
-        card.addEventListener("click", async () => {
-            let folder = card.dataset.folder;
-            await loadPlaylist(folder);
-        });
+    currentSong.addEventListener("ended", () => {
+        if (currentIndex < songs.length - 1) {
+            playMusic(songs[currentIndex + 1], currentIndex + 1);
+        }
     });
+
+    document.querySelector(".range input").addEventListener("input", e => {
+        currentSong.volume = e.target.value / 100;
+    });
+
     document.querySelector(".volume img").addEventListener("click", e => {
         if (e.target.src.includes("volume.svg")) {
             e.target.src = "img/mute.svg";
             currentSong.volume = 0;
         } else {
             e.target.src = "img/volume.svg";
-            currentSong.volume = 0.1;
+            currentSong.volume = 0.5;
         }
     });
-    document.querySelector(".login-btn").addEventListener("click", function () {
-        window.location.href = "login.html";
-    })
-    document.querySelector(".signup-btn").addEventListener("click", function () {
-        window.location.href = "signup.html";
-    })
-    const username = localStorage.getItem("username");
 
+    Array.from(document.getElementsByClassName("card")).forEach(card => {
+        card.addEventListener("click", async () => {
+            await loadPlaylist(card.dataset.folder);
+        });
+    });
+
+    document.querySelector(".hamburger").addEventListener("click", () => {
+        document.querySelector(".left").classList.add("active");
+    });
+
+    document.querySelector(".close").addEventListener("click", () => {
+        document.querySelector(".left").classList.remove("active");
+    });
+
+    const username = localStorage.getItem("username");
     if (username) {
         document.getElementById("user-name").innerText = "Welcome, " + username;
         document.getElementById("user-name").style.display = "inline";
-
         document.querySelector(".signup-btn").style.display = "none";
         document.querySelector(".login-btn").style.display = "none";
         document.getElementById("logout-btn").style.display = "inline";
     }
-
-
-
 }
-main()
+
+main();
+
 function logout() {
     localStorage.removeItem("username");
     window.location.reload();
-} 
+}
+
+
+
+const loginBtn = document.querySelector(".login-btn");
+const signupBtn = document.querySelector(".signup-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const userNameEl = document.getElementById("user-name");
+
+loginBtn?.addEventListener("click", () => {
+    window.location.href = "login.html";
+});
+
+signupBtn?.addEventListener("click", () => {
+    window.location.href = "signup.html";
+});
+
+const username = localStorage.getItem("username");
+
+if (username) {
+    if (userNameEl) {
+        userNameEl.innerText = `Welcome, ${username}`;
+        userNameEl.style.display = "inline";
+    }
+
+    loginBtn && (loginBtn.style.display = "none");
+    signupBtn && (signupBtn.style.display = "none");
+
+    logoutBtn && (logoutBtn.style.display = "inline");
+}
+
+function logout() {
+    localStorage.removeItem("username");
+    window.location.href = "login.html";
+}

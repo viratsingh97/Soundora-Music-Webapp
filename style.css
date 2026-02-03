@@ -450,20 +450,28 @@ body {
     transform: scale(1.05);
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1200px) {
     .hamburger {
         display: flex;
     }
 
+    .container {
+        position: relative;
+    }
+
     .left {
         position: absolute;
-        left: -100%;
+        left: -350px;
         top: 0;
-        height: 100vh;   
+        min-height: 100dvh;
         width: 350px;
         background-color: black;
         transition: left 0.3s ease;
         z-index: 10;
+    }
+
+    .left.active {
+        left: 0;
     }
 
     .left .close {
@@ -481,16 +489,18 @@ body {
 
     .playbar {
         width: 100%;
-        left: 0;
     }
-    .cardcontainer{
+
+    .cardcontainer {
         justify-content: center;
-        margin: 0px;
+        margin: 0;
     }
-    .card{
-        width: 90vw;
+
+    .card {
+        width: min(90vw, 400px);
     }
 }
+
 /* changes */
 .play-circle {
     position: absolute;
@@ -516,4 +526,47 @@ body {
 .container {
     width: 100%;
     min-height: 100vh;
+}
+.seekbar {
+    position: relative;
+    height: 6px;              
+    background: #555;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.seekbar::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+}
+
+.circle {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    pointer-events: none; 
+}
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;   
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;   
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
