@@ -138,9 +138,15 @@ async function main() {
 
     Array.from(document.getElementsByClassName("card")).forEach(card => {
         card.addEventListener("click", async () => {
+
             await loadPlaylist(card.dataset.folder);
+
+            if (window.innerWidth <= 1200) {
+                document.querySelector(".left").classList.add("active");
+            }
         });
     });
+
 
     document.querySelector(".hamburger").addEventListener("click", () => {
         document.querySelector(".left").classList.add("active");
